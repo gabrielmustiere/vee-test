@@ -3,22 +3,29 @@
     <Form v-slot="{form,meta}" :validation-schema="schema" @submit="onSubmit">
       <div class="flex flex-col w-80">
         <Field v-slot="{field,meta}" name="email" type="email">
-          <label :class="{ 'bg-red': !testValid(meta) }">Email</label>
-          <input :class="{ 'bg-red': !testValid(meta) }" v-bind="field">
+          <label>Email</label>
+          <input :class="{ 'bg-red': !testValid(meta) }" autocomplete="off" v-bind="field">
+          <ErrorMessage :as="'span'" name="email">L'email n'est pas valide</ErrorMessage>
+          <div>Meta champ email</div>
+          <pre>{{ meta }}</pre>
         </Field>
-        <ErrorMessage name="email">L'email n'est pas valide</ErrorMessage>
+        <hr>
         <Field v-slot="{field,meta}" name="prenom" type="prenom">
-          <label :class="{ 'bg-red': !testValid(meta) }">Prénom</label>
-          <input :class="{ 'bg-red': !testValid(meta) }" v-bind="field">
+          <label>Prénom</label>
+          <input :class="{ 'bg-red': !testValid(meta) }" autocomplete="off" v-bind="field">
+          <ErrorMessage :as="'span'" name="prenom">Le prénom n'est pas valide</ErrorMessage>
+          <div>Meta champ prenom</div>
+          <pre>{{ meta }}</pre>
         </Field>
-        <ErrorMessage v-slot="{meta}" name="prenom">
-          <div>
-            Le prénom n'est pas valide
-          </div>
-        </ErrorMessage>
+        <hr>
         <button>Soummetre</button>
+        <hr>
+        <div>Meta formulaire</div>
+        <pre>{{ meta }}</pre>
       </div>
     </Form>
+    <hr>
+    Résultat soumettre : {{ formValues }}
   </div>
 </template>
 <script>
@@ -34,28 +41,33 @@ export default {
   data() {
     return {
       schema: object({
-        email: string().min(2).required(),
+        email: string().email().required(),
         prenom: string().min(2).required(),
-      })
+      }),
+      formValues: ''
     }
   },
   methods: {
     onSubmit(values) {
-      console.log("Les values " + JSON.stringify(values));
+      this.formValues = JSON.stringify(values);
     },
     testValid(meta) {
-      return (meta.valid || meta.dirty === false);
+      return (meta.valid || meta.touched === false);
     }
   },
 };
 </script>
 
 <style scoped>
-.bg-red {
-  background-color: red;
-}
-
 * {
   display: block;
+}
+
+.bg-red {
+  border-color: red;
+}
+
+span[role="alert"] {
+  color: red;
 }
 </style>
